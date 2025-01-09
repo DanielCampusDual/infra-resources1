@@ -1,5 +1,5 @@
 variable "user_aws" {
-  description = "Usuario AntonioGil AWS"
+  description = "Usuario Daniel Alessi"
   type        = string
 }
 
@@ -10,10 +10,5 @@ variable "aws_region" {
 
 variable "bucket_name" {
   description = "Nombre para el bucket0"
-  type        = string
-}
-
-variable "bucket_name1" {
-  description = "Nombre para el bucket1"
   type        = string
 }

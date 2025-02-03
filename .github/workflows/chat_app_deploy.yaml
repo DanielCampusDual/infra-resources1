@@ -3,7 +3,7 @@ name: Deploy Chat App to EKS
 on:
   push:
     branches:
-    - feature/daniel # Change to the branch you want to trigger the deployment
+    - feature/daniel
 
 jobs:
   build:

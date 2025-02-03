@@ -1,0 +1,96 @@
+name: Deploy Chat App to EKS
+
+on:
+  push:
+    branches:
+    - feature/daniel # Change to the branch you want to trigger the deployment
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # Step 1: Checkout code
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    # Step 2: Set up Docker Buildx for multi-platform support
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # Step 3: Cache Docker layers to speed up subsequent builds
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    # Step 4: Build Docker image
+    - name: Build Docker image
+      run: |
+        docker build -t my-chat-app .
+
+    # Step 5: Log in to Amazon ECR
+    - name: Log in to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v1
+
+    # Step 6: Tag and push the Docker image to ECR
+    - name: Push Docker image to ECR
+      run: |
+        docker tag my-chat-app:latest ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
+        docker push ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
+
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+    # Step 1: Checkout code
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    # Step 2: Configure AWS credentials using GitHub Secrets
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-3
+
+    # Step 3: Set up Terraform
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Step 4: Initialize Terraform
+    - name: Terraform Init
+      run: terraform init
+
+    # Step 5: Apply Terraform configuration
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+
+  k8s_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    # Step 1: Checkout code
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    # Step 2: Configure AWS credentials
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-3
+
+    # Step 3: Set up kubectl (Kubernetes CLI)
+    - name: Set up kubectl
+      uses: actions/setup-kubectl@v2
+      with:
+        kubeconfig: ${{ secrets.KUBECONFIG }}
+
+    # Step 4: Apply Kubernetes manifests (service.yaml and chat-app-deployment.yaml)
+    - name: Deploy Chat App to Kubernetes
+      run: |
+        kubectl apply -f k8s/chat-app-service.yaml
+        kubectl apply -f k8s/chat-app-deployment.yaml

@@ -1,0 +1,13 @@
+name: CI Pipeline
+on:
+  push:
+    branches:
+    - feature/daniel
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    - name: Print Message
+      run: echo "Daniel's first day learning CI/CD!"

@@ -40,7 +40,7 @@ jobs:
     # Step 6: Tag and push the Docker image to ECR
     - name: Push Docker image to ECR
       run: |
-        docker tag my-chat-app:latest ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
+        docker tag ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
         docker push ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
 
   terraform:

@@ -12,7 +12,7 @@ jobs:
         sudo apt-get install yamllint  # Instalar yamllint
         yamllint . || true  # Validar el YAML en el repositorio
 
-    - name: Checkout Code
+       - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Print Message

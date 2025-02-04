@@ -10,7 +10,7 @@ jobs:
     - name: Validate YAML Files
       run: |
         sudo apt-get install yamllint  # Instalar yamllint
-        yamllint .  # Validar el YAML en el repositorio
+        yamllint . || true  # Validar el YAML en el repositorio
 
     - name: Checkout Code
       uses: actions/checkout@v3

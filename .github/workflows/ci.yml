@@ -9,10 +9,17 @@ jobs:
     steps:
     - name: Validate YAML Files
       run: |
-        sudo apt-get install yamllint  # Instalar yamllint
-        yamllint . || true  # Validar el YAML en el repositorio
+        sudo apt-get install -y yamllint  # Install yamllint
+        output=$(yamllint .)  # Capture the output of yamllint
+        echo "$output"  # Echo the output of yamllint
+        if [ -n "$output" ]; then
+          echo "YAML validation failed!"  # If there's output (errors), print this message
+          exit 1  # Exit with non-zero code to fail the workflow
+        else
+          echo "YAML validation passed!"  # If no output (no errors), print success message
+        fi
 
-       - name: Checkout Code
+    - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Print Message

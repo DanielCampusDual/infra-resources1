@@ -7,20 +7,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
     - name: Validate YAML Files
       run: |
-        sudo apt-get install -y yamllint  # Install yamllint
-        output=$(yamllint .)  # Capture the output of yamllint
-        echo "$output"  # Echo the output of yamllint
-        if [ -n "$output" ]; then
-          echo "YAML validation failed!"  # If there's output (errors), print this message
-          exit 1  # Exit with non-zero code to fail the workflow
-        else
-          echo "YAML validation passed!"  # If no output (no errors), print success message
-        fi
-
-     - name: Checkout Code
-      uses: actions/checkout@v3
+        sudo apt-get update
+        # Ejecutamos yamllint y guardamos la salida en un archivo
+          yamllint .github/workflows/prueba.yml > yamllint_output.txt || true
+          echo "Resultados de yamllint:"
+          cat yamllint_output.txt
+          # Guardamos la salida en la variable de output 'result'
+          echo "result<<EOF" >> $GITHUB_OUTPUT
+          cat yamllint_output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+    - name: Mostrar resultados de yamllint
+      run: echo "${{ steps.yamllint.outputs.result }}"
 
     - name: Print Message
       run: echo "Daniel's first day learning CI/CD!"

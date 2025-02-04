@@ -27,5 +27,5 @@ jobs:
     - name: Mostrar resultados de yamllint
       run: echo "${{ steps.yamllint.outputs.result }}"
 
-          - name: Print Message
+    - name: Print Message
       run: echo "Daniel's first day learning CI/CD!"

@@ -7,7 +7,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Validate YAML Files
+      run: |
+        sudo apt-get install yamllint  # Instalar yamllint
+        yamllint .  # Validar el YAML en el repositorio
+
     - name: Checkout Code
       uses: actions/checkout@v3
+
     - name: Print Message
       run: echo "Daniel's first day learning CI/CD!"

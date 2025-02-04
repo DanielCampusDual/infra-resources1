@@ -7,13 +7,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Validate YAML Files
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Validate prueba.yml
+      id: yamllint
       run: |
-        sudo apt-get install yamllint  # Instalar yamllint
-        yamllint . || true  # Validar el YAML en el repositorio
+        sudo apt-get update
+        sudo apt-get install -y yamllint
+        # Ejecutamos yamllint y guardamos la salida en un archivo
+        yamllint .github/workflows/ci.yml > yamllint_output.txt || true
+        echo "Resultados de yamllint:"
+        cat yamllint_output.txt
+        # Guardamos la salida en la variable de output 'result'
+        echo "result<<EOF" >> $GITHUB_OUTPUT
+        cat yamllint_output.txt >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
 
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Print Message
-      run: echo "Daniel's first day learning CI/CD!"
+    - name: Mostrar resultados de yamllint
+      run: echo "${{ steps.yamllint.outputs.result }}"
